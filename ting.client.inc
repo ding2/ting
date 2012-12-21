@@ -270,8 +270,11 @@ function ting_execute_cache($request) {
   if (!isset($calls)) {
     $calls = array();
   }
-  $calls[] = $request->getRequest()->getParameters();
+  $params = $request->getRequest()->getParameters();
+  $start_time = microtime(TRUE);
   $reply = ting_execute($request);
+  $params['time'] = microtime(TRUE) - $start_time;
+  $calls[] = $params;
 
   // Cache any sub-objects (mostly true for collections).
   if (isset($reply->objects)) {

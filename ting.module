@@ -520,14 +520,14 @@ function ting_ding_entity_buttons($type, $entity) {
  */
 function ting_page_alter(&$page) {
   $calls = &drupal_static('ting_execute_cache');
-  if (sizeof($calls) > 1) {
+  if (sizeof($calls) > 5) {
     $calls_str = array();
     foreach ($calls as $call) {
       $calls_str[] = print_r($calls, TRUE);
     }
     watchdog('ting', 'Warning, ting_execute called @x times:<br />"@queries"', array('@x' => sizeof($calls), '@queries' => join('" "', $calls_str)), WATCHDOG_WARNING);
     if (function_exists('dpm') && user_access('access devel information')) {
-      drupal_set_message(t('Warning, ting_execute called @x times.', array('@x' => sizeof($calls))), 'error');
+      //drupal_set_message(t('Warning, ting_execute called @x times.', array('@x' => sizeof($calls))), 'error');
       dpm($calls, 'ting_execute queries:');
     }
   }
@@ -554,7 +554,9 @@ function ting_collection_page_view($object) {
  * Page title callback.
  */
 function ting_page_title($object) {
-  return check_plain($object->title);
+  // check_plain is handled later on.
+  return $object->title;
+  // return check_plain($object->title);
 }
 
 /**
