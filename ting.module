@@ -884,7 +884,8 @@ function _ting_fetch_well_types() {
   foreach ($result->facets['facet.type']->terms as $term => $count) {
     $types[drupal_strtolower($term)] = $count;
   }
-
+  // Sort material types alphabetically.
+  ksort($types);
   // Only save if we actually got any types.
   if (!empty($types)) {
     variable_set('ting_well_types', $types);
