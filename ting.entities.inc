@@ -51,6 +51,7 @@ class TingEntity extends DingEntity {
   public $isPartOf = DingEntityBase::NULL;
   public $extent = DingEntityBase::NULL;
   public $classification = DingEntityBase::NULL;
+  public $publisher = DingEntityBase::NULL;
 
   public function getExtent() {
     return !empty($this->reply->record['dcterms:extent'][''][0]) ? $this->reply->record['dcterms:extent'][''][0] : FALSE;
@@ -192,6 +193,10 @@ class TingEntity extends DingEntity {
     return !empty($this->reply->record) ? $this->reply->record : false;
   }
 
+  public function getPublisher() {
+    return !empty($this->reply->record['dc:publisher'][''][0]) ? $this->reply->record['dc:publisher'][''][0] : FALSE;
+  }
+  
   function getRelations() {
     // If relations are not set; do another request to get relations
     if( !isset($this->reply->relationsData) ) {
