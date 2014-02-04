@@ -57,7 +57,7 @@ class TingEntity extends DingEntity {
   }
 
   function getClassification() {
-    $ret = (isset($this->reply->record['dc:subject']['dkdcplus:DK5'][0]) ? $this->reply->record['dc:subject']['dkdcplus:DK5'][0] : '' .
+    $ret = ((isset($this->reply->record['dc:subject']['dkdcplus:DK5'][0]) ? $this->reply->record['dc:subject']['dkdcplus:DK5'][0] : '') .
 	    (isset($this->reply->record['dc:subject']['dkdcplus:DK5-Text']) ? ' (' . $this->reply->record['dc:subject']['dkdcplus:DK5-Text'][0] . ')' : ''));
     if( strlen($ret) > 0 ) {
       return $ret;
