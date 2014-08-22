@@ -41,10 +41,16 @@ function ting_get_object($object_id, $collection = FALSE, $with_relations = FALS
 
       // Build request request and set object id.
       $request = ting_get_request_factory()->getObjectRequest();
+      if (!is_object($request)) {
+        return NULL;
+      }
       if ($collection) {
         // If this is a collection we need to do a collection request, which is
         // a search request.
         $request = ting_get_request_factory()->getCollectionRequest();
+        if (!is_object($request)) {
+          return NULL;
+        }
         $request->setAllObjects(FALSE);
       }
       $request->setObjectId($object_id);
@@ -161,6 +167,9 @@ function ting_get_objects($ids) {
   $query_chunks = array_chunk($query, 50);
   foreach ($query_chunks as $query_chunk) {
     $request = ting_get_request_factory()->getSearchRequest();
+    if (!is_object($request)) {
+      return NULL;
+    }
     if ($agency) {
       $request->setAgency($agency);
     }
@@ -221,6 +230,9 @@ function ting_get_objects($ids) {
  */
 function ting_do_search($query, $page = 1, $results_per_page = 10, $options = array()) {
   $request = ting_get_request_factory()->getSearchRequest();
+  if (!is_object($request)) {
+    return NULL;
+  }
   $request->setQuery($query);
   if ($agency = variable_get('ting_agency', FALSE)) {
     $request->setAgency($agency);
@@ -556,6 +568,9 @@ function _ting_cache_no_relations($object, $with_relations) {
  */
 function ting_get_object_recommendations($isbn, $num_results = 10) {
   $request = ting_get_request_factory()->getObjectRecommendationRequest();
+  if (!is_object($request)) {
+    return FALSE;
+  }
   $request->setIsbn($isbn);
   $request->setNumResults($num_results);
   return ting_execute($request);
@@ -592,9 +607,6 @@ function ting_get_request_factory() {
     $urls = array();
     foreach ($url_variables as $name => $setting) {
       $urls[$name] = variable_get($setting, FALSE);
-      if (!$urls[$name]) {
-        throw new TingClientException('No Ting webservice url defined for ' . $name);
-      }
     }
 
     $request_factory = new TingClientRequestFactory($urls);
@@ -707,6 +719,10 @@ function ting_get_client() {
  */
 function ting_do_scan($query, $phrase = 'anyIndexes', $num_results = 10) {
   $request = ting_get_request_factory()->getScanRequest();
+  if (!is_object($request)) {
+    return FALSE;
+  }
+
   $request->setField('phrase.' . $phrase);
   $request->setLower($query);
   $request = ting_add_agency($request);
@@ -744,6 +760,9 @@ function ting_add_agency(TingClientScanRequest $request) {
  */
 function ting_get_spell_suggestions($word, $num_results = 10) {
   $request = ting_get_request_factory()->getSpellRequest();
+  if (!is_object($request)) {
+    return FALSE;
+  }
   $request->setWord($word);
   $request->setNumResults($num_results);
   return ting_execute($request);
