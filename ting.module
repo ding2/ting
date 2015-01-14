@@ -97,6 +97,16 @@ function ting_menu() {
     'file' => 'ting.admin.inc',
   );
 
+  $items['admin/config/ting/types'] = array(
+    'title' => 'Types',
+    'description' => 'Configure custom names for ting types.',
+    'weight' => -10,
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ting_admin_types_settings'),
+    'access arguments' => array('administer ting settings'),
+    'file' => 'ting.admin.inc',
+  );
+
   $items['admin/config/ting/ranking'] = array(
     'title' => 'Search result ranking',
     'description' => 'Provides settings for how search results are ranked.',
@@ -294,7 +304,7 @@ function ting_block_view($delta = '') {
         $block->subject = t('Other materialtypes');
         $items = array();
         foreach ($collection->types as $type) {
-          $items[] = l($type . ' (' . $collection->types_count[$type] . ')', '#' . $type, array('external' => TRUE));
+          $items[] = l(ting_type_label($type) . ' (' . $collection->types_count[$type] . ')', '#' . $type, array('external' => TRUE));
         }
         $block->content = array(
           '#theme' => 'item_list',
@@ -311,7 +321,7 @@ function ting_block_view($delta = '') {
           $uri = entity_uri('ting_collection', $collection);
           $uri['options']['fragment'] = _ting_anchor_name($type);
           $uri['options']['attributes'] = array('class' => array('js-search-overlay'));
-          $items[] = l($type . ' (' . $collection->types_count[$type] . ')', $uri['path'], $uri['options']);
+          $items[] = l(ting_type_label($type) . ' (' . $collection->types_count[$type] . ')', $uri['path'], $uri['options']);
         }
 
         // Only display block if there are more than on item.
@@ -1058,4 +1068,17 @@ function _ting_anchor_name($type) {
   $name = str_replace(':', '', $name);
   $name = strtolower($name);
   return $name;
+}
+
+/**
+ * Return the label for a material type.
+ */
+function ting_type_label($type) {
+  $types = variable_get('ting_type_labels', array());
+  $lc_type = drupal_strtolower($type);
+  if (isset($types[$lc_type]) && !empty($types[$lc_type])) {
+    return $types[$lc_type];
+  }
+
+  return $type;
 }
