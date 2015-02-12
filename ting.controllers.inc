@@ -103,17 +103,26 @@ class TingObjectController extends DrupalDefaultEntityController {
       foreach ($unknown as $ding_entity_id) {
         if (isset($objects[$ding_entity_id])) {
           // Insert a new local proxy row.
-          $ting_object = array(
-            'ding_entity_id' => $ding_entity_id,
-          );
-          drupal_write_record('ting_object', $ting_object);
-          drupal_write_record('ting_object_revision', $ting_object);
-          db_update('ting_object')
-            ->fields(array('vid' => $ting_object['vid']))
-            ->condition('tid', $ting_object['tid'])
+          $tid = db_insert('ting_object')
+            ->fields(array(
+              'ding_entity_id' => $ding_entity_id,
+            ))
             ->execute();
+
+          $vid = db_insert('ting_object_revision')
+            ->fields(array(
+              'tid' => $tid,
+              'timestamp' => 0,
+            ))
+            ->execute();
+
+          db_update('ting_object')
+            ->condition('tid', $tid)
+            ->fields(array('vid' => $vid))
+            ->execute();
+
           // Add new id to the loaded set.
-          $new_ids[] = $ting_object['tid'];
+          $new_ids[] = $tid;
         }
       }
       if ($new_ids) {
