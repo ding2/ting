@@ -5,6 +5,8 @@
  * Entity classes for ting objects and collections.
  */
 
+define('TING_OBJ_DESCRIPTION_LENGTH', 180);
+
 /**
  * Object representing a relation between TingEntites.
  */
@@ -324,7 +326,17 @@ class TingEntity extends DingEntity {
   }
 
   function getDescription() {
-    return !empty($this->reply->record['dc:description'][''][0]) ? $this->reply->record['dc:description'][''][0] : FALSE;
+    $description = FALSE;
+    if (!empty($this->reply->record['dc:description'][''][0])) {
+      $description = $this->reply->record['dc:description'][''][0];
+      if (drupal_strlen($description) > TING_OBJ_DESCRIPTION_LENGTH) {
+        $description = truncate_utf8($description, TING_OBJ_DESCRIPTION_LENGTH, TRUE, TRUE);
+      }
+      else {
+        $description .= t('...');
+      }
+    }
+    return $description;
   }
 
   /**
