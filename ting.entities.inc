@@ -326,7 +326,6 @@ class TingEntity extends DingEntity {
   }
 
   function getDescription() {
-    return !empty($this->reply->record['dc:description'][''][0]) ? $this->reply->record['dc:description'][''][0] : FALSE;
     $description = FALSE;
     if (!empty($this->reply->record['dc:description'][''][0])) {
       $description = $this->reply->record['dc:description'][''][0];
