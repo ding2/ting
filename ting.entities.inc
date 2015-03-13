@@ -266,6 +266,10 @@ class TingEntity extends DingEntity {
   }
 
   function getLanguage() {
+    if (!isset($this->reply->record['dc:language'])) {
+      return FALSE;
+    }
+
     $languages = $this->reply->record['dc:language'];
     $languages_string = '';
     foreach (reset($languages) as $key => $lang) {
