@@ -255,6 +255,11 @@ function ting_do_search($query, $page = 1, $results_per_page = 10, $options = ar
   if (isset($options['sort']) && $options['sort']) {
     $request->setSort($options['sort']);
   }
+  else{
+    $sort = variable_get('ting_sort_default', 'rank_frequency');
+    $request->setSort($sort);
+  }
+
   if (isset($options['collectionType'])) {
     $request->setCollectionType($options['collectionType']);
   }
@@ -294,11 +299,6 @@ function ting_do_search($query, $page = 1, $results_per_page = 10, $options = ar
       $request->userDefinedRanking = array('tieValue' => 0.1, 'rankField' => $fields);
     }
   }
-  // Otherwise, use the ranking setting.
-  else {
-    $request->setRank((isset($options['rank']) && $options['rank']) ? $options['rank'] : 'rank_general');
-  }
-
   // Apply custom boosts if any.
   $boosts = variable_get('ting_boost_fields', array());
 
@@ -605,10 +605,8 @@ function ting_get_request_factory() {
   if (!isset($request_factory)) {
     $url_variables = array(
       'search' => 'ting_search_url',
-      'scan' => 'ting_scan_url',
       'object' => 'ting_search_url',
       'collection' => 'ting_search_url',
-      'spell' => 'ting_spell_url',
       'recommendation' => 'ting_recommendation_url',
     );
 
@@ -714,65 +712,4 @@ function ting_get_client() {
   }
 
   return $client;
-}
-
-/**
- * Use OpenScan to search for keyword.
- *
- * See http://oss.dbc.dk/twiki/bin/view/Databroend/OpenSearchDocIndexes for
- * information about which phrase index to search, default is 'anyIndexes'.
- *
- * @param string $query
- *   The prefix to scan for
- * @param string $phrase
- *   Which phrase index to search.
- * @param int $num_results
- *   The number of results to return.
- *
- * @return mixed
- *   A TingClientScanResult object with the scan results found or FALSE if non
- *   found or connection failed.
- */
-function ting_do_scan($query, $phrase = 'anyIndexes', $num_results = 10) {
-  $request = ting_get_request_factory()->getScanRequest();
-  $request->setField('phrase.' . $phrase);
-  $request->setLower($query);
-  $request = ting_add_agency($request);
-  $request->setNumResults($num_results);
-  return ting_execute($request);
-}
-
-/**
- * Add agency to ting scan request.
- *
- * @param TingClientScanRequest $request
- *   The request to add agency to.
- *
- * @return TingClientScanRequest
- *   The request with the added agency.
- */
-function ting_add_agency(TingClientScanRequest $request) {
-  if ($agency = variable_get('ting_agency', FALSE)) {
-    $request->setAgency($agency);
-  }
-  return $request;
-}
-
-/**
- * Get spell suggestions from the open spell service.
- *
- * @param string $word
- *   The word to get spell suggestions for.
- * @param int $num_results
- *   The number of results to return.
- *
- * @return mixed
- *   Array with TingClientSpellSuggestion objects or FALSE if non found or
- *   connection failed.
- */
-function ting_get_spell_suggestions($word, $num_results = 10) {
-  $request = ting_get_request_factory()->getSpellRequest();
-  $request->setWord($word);
-  $request->setNumResults($num_results);
-  return ting_execute($request);
 }
