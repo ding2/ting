@@ -15,7 +15,7 @@ projects[virtual_field][version] = "1.2"
 
 libraries[ting-client][download][type] = "git"
 libraries[ting-client][download][url] = "git@github.com:ding2/ting-client.git"
-libraries[ting-client][download][tag] = "7.x-2.3.0-rc5"
+libraries[ting-client][download][tag] = "7.x-2.3.0-rc6"
 libraries[ting-client][destination] = "modules/ting/lib"
 
 ; Ding 2 modules
@@ -23,4 +23,4 @@ libraries[ting-client][destination] = "modules/ting/lib"
 projects[ding_entity][type] = "module"
 projects[ding_entity][download][type] = "git"
 projects[ding_entity][download][url] = "git@github.com:ding2/ding_entity.git"
-projects[ding_entity][download][tag] = "7.x-2.3.0-rc5"
+projects[ding_entity][download][tag] = "7.x-2.3.0-rc6"
