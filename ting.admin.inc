@@ -96,6 +96,56 @@ function ting_admin_ting_settings($form_state) {
 }
 
 /**
+ * Form builder; Configure custom names for ting types.
+ *
+ * @ingroup forms
+ * @see system_settings_form()
+ */
+function ting_admin_types_settings($form_state) {
+  form_load_include($form_state, 'inc', 'ting', 'ting.admin');
+  form_load_include($form_state, 'inc', 'ting', 'ting.client');
+  $form = array();
+
+  $form['update'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Update from datawell'),
+    '#description' => t('Update the list of known types by asking the datawell for all types.'),
+  );
+
+  $form['update']['update'] = array(
+    '#type' => 'submit',
+    '#value' => t('Update'),
+    '#submit' => array('ting_admin_update_types'),
+  );
+
+  $types = variable_get('ting_well_types', _ting_fetch_well_types());
+
+  $settings = variable_get('ting_type_labels', array());
+  $form['ting_type_labels'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Type labels'),
+    '#tree' => TRUE,
+    '#description' => t("Here you may override the default label for individual material types."),
+  );
+
+  if (count($types)) {
+    foreach ($types as $term => $count) {
+      $form['ting_type_labels'][$term] = array(
+        '#type' => 'textfield',
+        '#title' => $term,
+        '#default_value' => isset($settings[$term]) ? $settings[$term] : '',
+        '#description' => t('Count: @count', array('@count' => $count)),
+        // Fudge the parent so we'll get all the labels in one big array in
+        // ting_url_labels.
+        //'#parents' => array('ting_type_labels', $term),
+      );
+    }
+  }
+
+  return system_settings_form($form);
+}
+
+/**
  * Form builder; Configure custom search result ranking for this site.
  *
  * @ingroup forms
@@ -390,7 +440,7 @@ function ting_admin_online_types_settings($form_state) {
   $form['update']['update'] = array(
     '#type' => 'submit',
     '#value' => t('Update'),
-    '#submit' => array('ting_admin_online_types_settings_update_types'),
+    '#submit' => array('ting_admin_update_types'),
   );
 
   $types = variable_get('ting_well_types', _ting_fetch_well_types());
@@ -453,7 +503,7 @@ function ting_admin_online_types_settings($form_state) {
 /**
  * Submit handler. Updates the list of known types from the data well.
  */
-function ting_admin_online_types_settings_update_types($form, &$form_state) {
+function ting_admin_update_types($form, &$form_state) {
   _ting_fetch_well_types();
 }
 
