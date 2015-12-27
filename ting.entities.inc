@@ -264,7 +264,20 @@ class TingEntity extends DingEntity {
   }
 
   function getLanguage() {
-    return !empty($this->reply->record['dc:language'][''][0]) ? $this->reply->record['dc:language'][''][0] : FALSE;
+    if (!isset($this->reply->record['dc:language'])) {
+      return FALSE;
+    }
+
+    $languages = $this->reply->record['dc:language'];
+    $languages_string = '';
+    foreach (reset($languages) as $key => $lang) {
+      if ($lang == 'mul') {
+        continue;
+      }
+      $languages_string .= ', ' . $languages[''][$key];
+    }
+    $languages_string = (!empty($languages_string)) ? ltrim($languages_string, ', ') : FALSE;
+    return $languages_string;
   }
 
   function getDate() {
